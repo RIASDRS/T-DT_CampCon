@@ -304,6 +304,6 @@ int main()
         std::cout<<"FRAME== "<< i <<" ==================================="<< std::endl;
         std::string image_path = std::to_string(i) + ".png";
         cv::imwrite(image_path, contourImage);
-        cv::waitKey(0);
+        cv::waitKey(25);
     }
 }
