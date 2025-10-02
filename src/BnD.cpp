@@ -201,7 +201,7 @@ int main()
                 float rightLength = std::max(rightLight.size.width, rightLight.size.height);
 
                 // 计算几何关系
-                float angleGap = std::min(std::abs(leftLight.angle - rightLight.angle),std::abs(90-std::abs(leftLight.angle - rightLight.angle)));
+                float angleGap = std::min(std::abs(leftLight.angle - rightLight.angle), std::abs(90 - std::abs(leftLight.angle - rightLight.angle)));
                 float dis = cv::norm(leftLight.center - rightLight.center);
                 float midLen = (leftLength + rightLength) / 2;
 
@@ -224,14 +224,13 @@ int main()
                     ratio > 3.25 ||
                     ratio < 0.8)
                 {
-                    std::cout<<"|❌| [wrong pair:" <<"  leftLength"<< leftLength << "  rightLength" << rightLength <<"  dis" << dis << "  midLen" << midLen <<"  angleGap" << angleGap <<"  LenGap_ratio"<<LenGap_ratio<<"  yGap_ratio"<<yGap_ratio<<"  xGap_ratio"<<xGap_ratio<<"  ratio"<<ratio<<"]"<<std::endl;
+                    std::cout << "|❌| [wrong pair:" << "  leftLength" << leftLength << "  rightLength" << rightLength << "  dis" << dis << "  midLen" << midLen << "  angleGap" << angleGap << "  LenGap_ratio" << LenGap_ratio << "  yGap_ratio" << yGap_ratio << "  xGap_ratio" << xGap_ratio << "  ratio" << ratio << "]" << std::endl;
                     continue;
                 }
 
                 // 配对成功
                 armor_pairs.push_back(std::make_pair(leftLight, rightLight));
-                std::cout<<"|✅| RIGHT PAIR";
-
+                std::cout << "|✅| RIGHT PAIR";
 
                 // ========== 绘制装甲板 ==========
 
@@ -255,13 +254,26 @@ int main()
                 // 3. 绘制灯条连线（绿色虚线）
                 cv::line(contourImage, leftLight.center, rightLight.center, cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
 
-                // 4. 绘制数字区域（黄色矩形）
-                cv::Rect digit_roi = cv::Rect(
-                    armor_center.x - midLen,
-                    armor_center.y - dis/2,
-                    dis,
-                    midLen * 2);
-                cv::rectangle(contourImage, digit_roi, cv::Scalar(0, 255, 255), 2);
+                cv::Rect digit_roi = armor_rect.boundingRect();
+                digit_roi &= cv::Rect(0, 0, src.cols, src.rows);
+
+                if (digit_roi.width > 10 && digit_roi.height > 10)
+                {
+                    cv::Mat armor_roi = src(digit_roi);
+                    int digit = digit_recognizer.recognize(armor_roi);
+
+                    if (digit > 0 && digit <= 5)
+                    {
+                        cv::putText(contourImage, std::to_string(digit),
+                                    armor_center,
+                                    cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(255, 255, 0), 2);
+                    }
+
+                    // 绘制ROI边界框（黄色）
+                    cv::rectangle(contourImage, digit_roi, cv::Scalar(0, 255, 255), 2);
+                }
+
+
 
                 // 5. 在装甲板上方显示配对信息
                 std::string info = "D:" + std::to_string((int)dis) + " L:" + std::to_string((int)midLen);
@@ -301,7 +313,7 @@ int main()
                     cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(255, 255, 255), 2);
         imshow("BnD", contourImage);
         i++;
-        std::cout<<"FRAME== "<< i <<" ==================================="<< std::endl;
+        std::cout << "FRAME== " << i << " ===================================" << std::endl;
         std::string image_path = std::to_string(i) + ".png";
         cv::imwrite(image_path, contourImage);
         cv::waitKey(25);
