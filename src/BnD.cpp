@@ -109,7 +109,7 @@ int main()
     int frame_count = 0;
     double fps = 0;
     auto start_time = std::chrono::_V2::high_resolution_clock::now();
-    cv::VideoCapture cap("/home/hz/T-DT_CampCon/src/test1.avi", cv::CAP_ANY);
+    cv::VideoCapture cap("/home/hz/T-DT_CampCon/src/test1.avi", cv::CAP_FFMPEG);
     int i = 0;
     while (true)
     {
