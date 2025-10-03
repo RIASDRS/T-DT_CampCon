@@ -22,16 +22,10 @@ cv::RotatedRect unifyRotatedRect(const cv::RotatedRect& rect) {
     // 确保高度大于宽度
     if (size.width > size.height) {
         std::swap(size.width, size.height);
-        angle = std::fmod(angle + 90.0f, 180.0f);
+        angle = 90 - angle;
     }
     
-    // 转换回OpenCV角度
-    float opencv_angle = angle;
-    if (opencv_angle >= 90) {
-        opencv_angle -= 180;
-    }
-    
-    return cv::RotatedRect(center, size, opencv_angle);
+    return cv::RotatedRect(center, size, angle);
 }
 class DigitRecognizer
 {
