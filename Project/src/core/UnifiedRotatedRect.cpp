@@ -1,6 +1,8 @@
 #include "UnifiedRotatedRect.h"
 #include <algorithm>
 
+namespace armor_detection {
+
 cv::RotatedRect unifyRotatedRect(const cv::RotatedRect &rect)
 {
     cv::Point2f center = rect.center;
@@ -16,3 +18,5 @@ cv::RotatedRect unifyRotatedRect(const cv::RotatedRect &rect)
 
     return cv::RotatedRect(center, size, angle);
 }
+
+} // namespace armor_detection
