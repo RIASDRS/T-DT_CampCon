@@ -9,22 +9,19 @@
 #include <iomanip>
 
 // 对已有的RotatedRect进行统一化处理
-cv::RotatedRect unifyRotatedRect(const cv::RotatedRect& rect) {
+cv::RotatedRect unifyRotatedRect(const cv::RotatedRect &rect)
+{
     cv::Point2f center = rect.center;
     cv::Size2f size = rect.size;
     float angle = rect.angle;
-    
-    // 角度标准化
-    if (angle < 0) angle += 180.0f;
-    angle = std::fmod(angle, 180.0f);
-    if (angle < 0) angle += 180.0f;
-    
+
     // 确保高度大于宽度
-    if (size.width > size.height) {
+    if (size.width > size.height)
+    {
         std::swap(size.width, size.height);
         angle = 90 - angle;
     }
-    
+
     return cv::RotatedRect(center, size, angle);
 }
 class DigitRecognizer
@@ -204,7 +201,6 @@ int main()
 
                 // 存储灯条
                 light_bars.push_back(rrect);
-                
             }
         }
 
@@ -245,7 +241,7 @@ int main()
                     ratio > 3.25 ||
                     ratio < 0.8)
                 {
-                    std::cout << "|❌| [wrong pair:" << "  leftLength" << leftLength << "  rightLength" << rightLength << "  dis" << dis << "  midLen" << midLen << "  angleGap" << angleGap << "  LenGap_ratio" << LenGap_ratio << "  yGap_ratio" << yGap_ratio << "  xGap_ratio" << xGap_ratio << "  ratio" << ratio <<"  leftLight.angle"<<leftLight.angle<<"  rightLight.angle"<<rightLight.angle<< "]" << std::endl;
+                    std::cout << "|❌| [wrong pair:" << "  leftLength" << leftLength << "  rightLength" << rightLength << "  dis" << dis << "  midLen" << midLen << "  angleGap" << angleGap << "  LenGap_ratio" << LenGap_ratio << "  yGap_ratio" << yGap_ratio << "  xGap_ratio" << xGap_ratio << "  ratio" << ratio << "  leftLight.angle" << leftLight.angle << "  rightLight.angle" << rightLight.angle << "]" << std::endl;
                     continue;
                 }
 
@@ -261,8 +257,8 @@ int main()
                     armor_center,
                     cv::Size2f(midLen * 2, dis),
                     (leftLight.angle + rightLight.angle) / 2);
-                armor_rect = unifyRotatedRect(armor_rect); 
-                std::cout<<"  Armor Angle"<<(leftLight.angle + rightLight.angle) / 2;
+                armor_rect = unifyRotatedRect(armor_rect);
+                std::cout << "  Armor Angle" << (leftLight.angle + rightLight.angle) / 2;
 
                 cv::Point2f vertices[4];
                 armor_rect.points(vertices);
@@ -295,8 +291,6 @@ int main()
                     // 绘制ROI边界框（黄色）
                     cv::rectangle(contourImage, digit_roi, cv::Scalar(0, 255, 255), 2);
                 }
-
-
 
                 // 5. 在装甲板上方显示配对信息
                 std::string info = "D:" + std::to_string((int)dis) + " L:" + std::to_string((int)midLen);
@@ -339,6 +333,6 @@ int main()
         std::cout << "FRAME== " << i << " ===================================" << std::endl;
         std::string image_path = std::to_string(i) + ".png";
         cv::imwrite(image_path, contourImage);
-        cv::waitKey(0);
+        cv::waitKey(25);
     }
 }
