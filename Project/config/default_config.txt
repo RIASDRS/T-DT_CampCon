@@ -1,0 +1,5 @@
+video_path=/home/hz/T-DT_CampCon/Project/data/videos/test_video.avi
+model_path=/home/hz/T-DT_CampCon/Project/data/models/armor_digit_1to5_svm.yml
+camera_params_path=/home/hz/T-DT_CampCon/Project/data/calibration/camera_params.yml
+enable_pnp=true
+show_debug=true

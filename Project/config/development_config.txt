@@ -1,0 +1,16 @@
+# 开发环境配置 - 启用所有调试功能
+
+video_path=/home/hz/T-DT_CampCon/Project/data/videos/debug_video.avi
+model_path=/home/hz/T-DT_CampCon/Project/data/models/armor_digit_1to5_svm.yml
+camera_params_path=/home/hz/T-DT_CampCon/Project/data/calibration/camera_params.yml
+output_dir=/home/hz/T-DT_CampCon/Project/output/debug
+
+# 开发时启用所有调试功能
+enable_pnp=true
+show_debug=true
+save_results=true
+
+# 开发专用设置
+log_level=debug
+image_scale=0.8
+max_fps=60

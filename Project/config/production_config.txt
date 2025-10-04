@@ -1,0 +1,19 @@
+# 生产环境配置 - 优化性能
+
+# 使用相机实时检测
+camera_id=0
+video_path=""
+
+model_path=/home/hz/T-DT_CampCon/Project/data/models/armor_digit_1to5_svm.yml
+camera_params_path=/home/hz/T-DT_CampCon/Project/data/calibration/camera_params.yml
+output_dir=/home/hz/T-DT_CampCon/Project/output/production
+
+# 生产环境关闭调试以提升性能
+enable_pnp=true
+show_debug=false
+save_results=false
+
+# 性能优化
+log_level=warning
+image_scale=1.0
+max_fps=30

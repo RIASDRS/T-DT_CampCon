@@ -1,5 +1,8 @@
 #include "DigitRecognizer.h"
 #include <iostream>
+#include <filesystem>
+
+namespace armor_detection {
 
 DigitRecognizer::DigitRecognizer()
 {
@@ -13,6 +16,12 @@ DigitRecognizer::DigitRecognizer()
 
 bool DigitRecognizer::loadModel(const std::string &model_path)
 {
+    // 首先检查文件是否存在
+    if (!std::filesystem::exists(model_path)) {
+        std::cerr << "❌ 模型文件不存在: " << model_path << std::endl;
+        return false;
+    }
+    
     try
     {
         svm_model = cv::ml::SVM::load(model_path);
@@ -28,15 +37,11 @@ bool DigitRecognizer::loadModel(const std::string &model_path)
 
 int DigitRecognizer::recognize(const cv::Mat &digit_roi)
 {
-    if (svm_model.empty())
-    {
-        std::cout << "❌ 模型未加载" << std::endl;
+    if (svm_model.empty()) {
         return -1;
     }
 
-    if (digit_roi.empty())
-    {
-        std::cout << "❌ 数字区域为空" << std::endl;
+    if (digit_roi.empty()) {
         return -1;
     }
 
@@ -65,12 +70,12 @@ int DigitRecognizer::recognize(const cv::Mat &digit_roi)
         feature.convertTo(feature, CV_32F);
         float prediction = svm_model->predict(feature);
 
-        std::cout << "🔢 识别结果: " << prediction << std::endl;
         return static_cast<int>(prediction);
     }
     catch (const cv::Exception &e)
     {
-        std::cerr << "❌ 识别错误: " << e.what() << std::endl;
         return -1;
     }
 }
+
+} // namespace armor_detection
