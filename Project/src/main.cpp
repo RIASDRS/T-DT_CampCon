@@ -35,17 +35,17 @@ int main(int argc, char* argv[]) {
     
     // 加载配置
     ConfigLoader config_loader;
-    if (!config_loader.loadFromCommandLine(argc, argv)) {
+    if (!config_loader.loadFromCommandLine(argc, argv)) { //在config—loader中的loadFromCommmandLine抓取命令行传递的配置参数
         return 0; // 用户请求帮助信息
     }
     
     // 尝试加载配置文件（如果存在）
     std::string config_file = "/home/hz/T-DT_CampCon/Project/config/default_config.txt";
     if (checkFileExists(config_file)) {
-        config_loader.loadFromFile(config_file);
+        config_loader.loadFromFile(config_file); //调用config-loader读取配置文件中的信息
     }
     
-    auto config = config_loader.getConfig();
+    auto config = config_loader.getConfig();  // 
     config_loader.printConfig();
     
     // 检查必要文件
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
     
-    // 创建输出目录
+    // 如果没有输出目录，创建输出目录
     if (config.save_results && !createOutputDirectory(config.output_dir)) {
         return -1;
     }

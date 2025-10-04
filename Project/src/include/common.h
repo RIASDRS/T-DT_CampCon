@@ -56,7 +56,7 @@ struct LightBarPair {
 };
 
 // 检测结果
-struct DetectionResult {
+struct DetectionResult { //公共，装甲板检测的结果
     cv::RotatedRect armor_rect;         // 装甲板矩形
     std::vector<cv::Point2f> points2d;  // 2D特征点
     std::vector<Point3D> points3d;      // 3D模型点

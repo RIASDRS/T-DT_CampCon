@@ -6,7 +6,7 @@ namespace armor_detection {
 
 ArmorDetector::ArmorDetector() {}
 
-bool ArmorDetector::init(const std::string& model_path, const std::string& camera_params_path) {
+bool ArmorDetector::init(const std::string& model_path, const std::string& camera_params_path) { //初始化装甲板检测，会配置数字模型和相机参数路径
     std::cout << "🚀 初始化装甲板检测系统..." << std::endl;
     
     // 加载数字识别模型
@@ -66,7 +66,7 @@ DetectionResult ArmorDetector::createArmorResult(const LightBarPair& pair, const
     cv::Point2f armor_center = (pair.left_light.center + pair.right_light.center) * 0.5f;
     float armor_width = pair.distance;
     float armor_height = (std::max(pair.left_light.size.width, pair.left_light.size.height) + 
-                         std::max(pair.right_light.size.width, pair.right_light.size.height)) * 0.6f;
+                         std::max(pair.right_light.size.width, pair.right_light.size.height)) * 1.4f;
     
     result.armor_rect = cv::RotatedRect(armor_center, 
                                        cv::Size2f(armor_width, armor_height),
@@ -96,7 +96,7 @@ std::vector<cv::Point2f> ArmorDetector::extractArmorPoints(const LightBarPair& p
     cv::Point2f armor_center = (pair.left_light.center + pair.right_light.center) * 0.5f;
     float armor_width = pair.distance;
     float armor_height = (std::max(pair.left_light.size.width, pair.left_light.size.height) + 
-                         std::max(pair.right_light.size.width, pair.right_light.size.height)) * 0.6f;
+                         std::max(pair.right_light.size.width, pair.right_light.size.height)) * 1.4f;
     
     cv::RotatedRect armor_rect(armor_center, 
                               cv::Size2f(armor_width, armor_height),

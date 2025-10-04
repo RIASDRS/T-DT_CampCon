@@ -21,8 +21,8 @@ public:
     ArmorDetector();
     
     // 初始化
-    bool init(const std::string& model_path = "../../data/svm_model.yml",
-              const std::string& camera_params_path = "../../data/camera_params.yml");
+    bool init(const std::string& model_path = "/home/hz/T-DT_CampCon/Project/data/svm_model.yml",
+              const std::string& camera_params_path = "/home/hz/T-DT_CampCon/Project/data/camera_params.yml");
     
     // 处理单帧图像
     std::vector<DetectionResult> processFrame(const cv::Mat& frame);

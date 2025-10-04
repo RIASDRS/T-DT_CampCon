@@ -11,24 +11,24 @@ ConfigLoader::ConfigLoader() {
 }
 
 void ConfigLoader::setDefaultValues() {
-    config_ = AppConfig();
+    config_ = AppConfig(); //默认的值，在h文件中配置
 }
 
-bool ConfigLoader::loadFromFile(const std::string& file_path) {
+bool ConfigLoader::loadFromFile(const std::string& file_path) { //从配置文件读取
     std::ifstream file(file_path);
     if (!file.is_open()) {
         std::cerr << "❌ 无法打开配置文件: " << file_path << std::endl;
         return false;
     }
     
-    std::map<std::string, std::string> config_map;
+    std::map<std::string, std::string> config_map; //存在map里
     std::string line;
     
     while (std::getline(file, line)) {
         // 跳过空行和注释
         if (line.empty() || line[0] == '#') continue;
         
-        size_t pos = line.find('=');
+        size_t pos = line.find('='); //用等号定位
         if (pos != std::string::npos) {
             std::string key = line.substr(0, pos);
             std::string value = line.substr(pos + 1);
@@ -48,7 +48,7 @@ bool ConfigLoader::loadFromFile(const std::string& file_path) {
         }
     }
     
-    file.close();
+    file.close(); //读取完毕
     
     // 更新配置
     config_.video_path = getValueFromMap(config_map, "video_path", config_.video_path);

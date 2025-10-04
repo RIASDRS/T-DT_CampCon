@@ -7,10 +7,10 @@
 namespace armor_detection {
 
 struct AppConfig {
-    std::string video_path = "../../data/test_video.avi";
-    std::string model_path = "../../data/svm_model.yml";
-    std::string camera_params_path = "../../data/camera_params.yml";
-    std::string output_dir = "../../output";
+    std::string video_path = "/home/hz/T-DT_CampCon/Project/data/test_video.avi";
+    std::string model_path = "/home/hz/T-DT_CampCon/Project/data/svm_model.yml";
+    std::string camera_params_path = "/home/hz/T-DT_CampCon/Project/data/camera_params.yml";
+    std::string output_dir = "/home/hz/T-DT_CampCon/Project/output";
     bool enable_pnp = true;
     bool save_results = false;
     bool show_debug = true;
