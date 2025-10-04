@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
         if (config.show_debug) {
             cv::imshow("3D Armor Detection", display_frame);
             
-            int key = cv::waitKey(25);
+            int key = cv::waitKey(10);
             if (key == 27) { // ESC键退出
                 std::cout << "⏹️  用户中断处理" << std::endl;
                 break;
