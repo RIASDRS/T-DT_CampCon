@@ -10,7 +10,7 @@ CameraCalibrator::CameraCalibrator() {}
 bool CameraCalibrator::loadParams(const std::string& file_path) {
     cv::FileStorage fs(file_path, cv::FileStorage::READ);
     if (!fs.isOpened()) {
-        std::cerr << "❌ 无法打开相机参数文件: " << file_path << std::endl;
+        std::cerr << "[ERROR] 无法打开相机参数文件: " << file_path << std::endl;
         return false;
     }
     
@@ -18,7 +18,7 @@ bool CameraCalibrator::loadParams(const std::string& file_path) {
     fs["distortion_coefficients"] >> params_.dist_coeffs;
     
     if (params_.camera_matrix.empty() || params_.dist_coeffs.empty()) {
-        std::cerr << "❌ 相机参数读取失败" << std::endl;
+        std::cerr << "[ERROR] 相机参数读取失败" << std::endl;
         return false;
     }
     
@@ -29,9 +29,9 @@ bool CameraCalibrator::loadParams(const std::string& file_path) {
     params_.cy = params_.camera_matrix.at<double>(1, 2);
     
     params_.valid = true;
-    std::cout << "✅ 相机参数加载成功" << std::endl;
-    std::cout << "   内参矩阵: [" << params_.fx << ", 0, " << params_.cx << "]" << std::endl;
-    std::cout << "             [0, " << params_.fy << ", " << params_.cy << "]" << std::endl;
+    std::cout << "[Done] 相机参数加载成功" << std::endl;
+    std::cout << "       内参矩阵: [" << params_.fx << ", 0, " << params_.cx << "]" << std::endl;
+    std::cout << "                [0, " << params_.fy << ", " << params_.cy << "]" << std::endl;
     
     return true;
 }
@@ -39,14 +39,14 @@ bool CameraCalibrator::loadParams(const std::string& file_path) {
 bool CameraCalibrator::saveParams(const std::string& file_path) {
     cv::FileStorage fs(file_path, cv::FileStorage::WRITE);
     if (!fs.isOpened()) {
-        std::cerr << "❌ 无法创建相机参数文件: " << file_path << std::endl;
+        std::cerr << "[ERROR] 无法创建相机参数文件: " << file_path << std::endl;
         return false;
     }
     
     fs << "camera_matrix" << params_.camera_matrix;
     fs << "distortion_coefficients" << params_.dist_coeffs;
     
-    std::cout << "✅ 相机参数保存成功: " << file_path << std::endl;
+    std::cout << "[Done] 相机参数保存成功: " << file_path << std::endl;
     return true;
 }
 
@@ -68,13 +68,13 @@ bool CameraCalibrator::calibrate(const std::vector<std::string>& image_paths,
     // 处理所有标定图像
     for (const auto& image_path : image_paths) {
         if (!std::filesystem::exists(image_path)) {
-            std::cerr << "❌ 标定图像不存在: " << image_path << std::endl;
+            std::cerr << "[ERROR] 标定图像不存在: " << image_path << std::endl;
             continue;
         }
         
         cv::Mat image = cv::imread(image_path);
         if (image.empty()) {
-            std::cerr << "❌ 无法读取图像: " << image_path << std::endl;
+            std::cerr << "[ERROR] 无法读取图像: " << image_path << std::endl;
             continue;
         }
         
@@ -89,14 +89,14 @@ bool CameraCalibrator::calibrate(const std::vector<std::string>& image_paths,
         if (found) {
             image_points.push_back(corners);
             object_points.push_back(obj);
-            std::cout << "✅ 找到角点: " << image_path << std::endl;
+            std::cout << "[Done] 找到角点: " << image_path << std::endl;
         } else {
-            std::cerr << "❌ 未找到角点: " << image_path << std::endl;
+            std::cerr << "[ERROR] 未找到角点: " << image_path << std::endl;
         }
     }
     
     if (image_points.size() < 5) {
-        std::cerr << "❌ 有效标定图像不足，需要至少5张" << std::endl;
+        std::cerr << "[ERROR] 有效标定图像不足，需要至少5张" << std::endl;
         return false;
     }
     
@@ -120,10 +120,10 @@ bool CameraCalibrator::calibrate(const std::vector<std::string>& image_paths,
     params_.cx = camera_matrix.at<double>(0, 2);
     params_.cy = camera_matrix.at<double>(1, 2);
     
-    std::cout << "✅ 相机标定完成" << std::endl;
-    std::cout << "   RMS误差: " << rms << std::endl;
-    std::cout << "   内参矩阵: [" << params_.fx << ", 0, " << params_.cx << "]" << std::endl;
-    std::cout << "             [0, " << params_.fy << ", " << params_.cy << "]" << std::endl;
+    std::cout << "[Done] 相机标定完成" << std::endl;
+    std::cout << "       RMS误差: " << rms << std::endl;
+    std::cout << "       内参矩阵: [" << params_.fx << ", 0, " << params_.cx << "]" << std::endl;
+    std::cout << "                 [0, " << params_.fy << ", " << params_.cy << "]" << std::endl;
     
     return true;
 }
@@ -149,7 +149,7 @@ bool CameraCalibrator::findChessboardCorners(const cv::Mat& image, cv::Size boar
 
 cv::Mat CameraCalibrator::undistortImage(const cv::Mat& distorted) {
     if (!params_.valid) {
-        std::cerr << "❌ 相机参数未加载，无法去畸变" << std::endl;
+        std::cerr << "[ERROR] 相机参数未加载，无法去畸变" << std::endl;
         return distorted.clone();
     }
     

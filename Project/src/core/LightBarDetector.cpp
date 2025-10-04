@@ -108,7 +108,7 @@ std::vector<LightBarPair> LightBarDetector::pairLightBars(const std::vector<cv::
         }
     }
     
-    std::cout << "🔗 配对成功 " << pairs.size() << " 对灯条" << std::endl;
+    std::cout << "[Linked] 配对成功 " << pairs.size() << " 对灯条" << std::endl;
     return pairs;
 }
 

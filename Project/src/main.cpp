@@ -13,7 +13,7 @@ using namespace armor_detection;
 bool checkFileExists(const std::string& path) {
     bool exists = std::filesystem::exists(path);
     if (!exists) {
-        std::cerr << "❌ 文件不存在: " << path << std::endl;
+        std::cerr << "[ERROR] 文件不存在: " << path << std::endl;
     }
     return exists;
 }
@@ -22,16 +22,16 @@ bool checkFileExists(const std::string& path) {
 bool createOutputDirectory(const std::string& dir_path) {
     try {
         std::filesystem::create_directories(dir_path);
-        std::cout << "✅ 创建输出目录: " << dir_path << std::endl;
+        std::cout << "[Done] 创建输出目录: " << dir_path << std::endl;
         return true;
     } catch (const std::filesystem::filesystem_error& e) {
-        std::cerr << "❌ 无法创建输出目录: " << e.what() << std::endl;
+        std::cerr << "[ERROR] 无法创建输出目录: " << e.what() << std::endl;
         return false;
     }
 }
 
 int main(int argc, char* argv[]) {
-    std::cout << "🚀 3D装甲板检测系统启动..." << std::endl;
+    std::cout << "[Launched] 3D装甲板检测系统启动..." << std::endl;
     
     // 加载配置
     ConfigLoader config_loader;
@@ -65,26 +65,26 @@ int main(int argc, char* argv[]) {
     detector.setConfig(detector_config);
     
     if (!detector.init(config.model_path, config.camera_params_path)) {
-        std::cerr << "❌ 检测器初始化失败" << std::endl;
+        std::cerr << "[ERROR] 检测器初始化失败" << std::endl;
         return -1;
     }
     
-    std::cout << "✅ 系统初始化完成，开始处理..." << std::endl;
+    std::cout << "[Done] 系统初始化完成，开始处理..." << std::endl;
     
     // 打开视频源
     cv::VideoCapture cap;
     if (config.video_path.empty() || config.video_path == "0") {
         // 使用相机
         cap.open(config.camera_id);
-        std::cout << "📷 使用相机: ID " << config.camera_id << std::endl;
+        std::cout << "[Config] 使用相机: ID " << config.camera_id << std::endl;
     } else {
         // 使用视频文件
         cap.open(config.video_path);
-        std::cout << "🎥 使用视频文件: " << config.video_path << std::endl;
+        std::cout << "[Config] 使用视频文件: " << config.video_path << std::endl;
     }
     
     if (!cap.isOpened()) {
-        std::cerr << "❌ 无法打开视频源" << std::endl;
+        std::cerr << "[ERROR] 无法打开视频源" << std::endl;
         return -1;
     }
     
@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
     double fps = cap.get(cv::CAP_PROP_FPS);
     int total_frames = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_COUNT));
     
-    std::cout << "📊 视频信息: " << frame_width << "x" << frame_height 
+    std::cout << "[Info] 视频信息: " << frame_width << "x" << frame_height 
               << ", FPS: " << fps << ", 总帧数: " << total_frames << std::endl;
     
     cv::Mat frame;
@@ -105,10 +105,10 @@ int main(int argc, char* argv[]) {
     while (true) {
         if (!cap.read(frame)) {
             if (frame_count == 0) {
-                std::cerr << "❌ 无法读取第一帧" << std::endl;
+                std::cerr << "[ERROR] 无法读取第一帧" << std::endl;
                 break;
             } else {
-                std::cout << "✅ 视频处理完成" << std::endl;
+                std::cout << "[Done] 视频处理完成" << std::endl;
                 break;
             }
         }
@@ -145,7 +145,7 @@ int main(int argc, char* argv[]) {
             
             int key = cv::waitKey(10);
             if (key == 27) { // ESC键退出
-                std::cout << "⏹️  用户中断处理" << std::endl;
+                std::cout << "[PAUSED]  用户中断处理" << std::endl;
                 break;
             } else if (key == ' ') { // 空格键暂停
                 cv::waitKey(0);
@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
         
         // 每10帧输出一次进度
         if (frame_count % 10 == 0) {
-            std::cout << "📈 已处理 " << frame_count << " 帧" << std::endl;
+            std::cout << "[Done] 已处理 " << frame_count << " 帧" << std::endl;
         }
     }
     
@@ -165,8 +165,8 @@ int main(int argc, char* argv[]) {
     
     double average_fps = frame_count / total_duration;
     
-    std::cout << "\n🎉 处理完成!" << std::endl;
-    std::cout << "📊 统计信息:" << std::endl;
+    std::cout << "\n[Finished] 处理完成!" << std::endl;
+    std::cout << "[Info] 统计信息:" << std::endl;
     std::cout << "   总帧数: " << frame_count << std::endl;
     std::cout << "   总耗时: " << std::fixed << std::setprecision(2) << total_duration << " 秒" << std::endl;
     std::cout << "   平均FPS: " << std::fixed << std::setprecision(2) << average_fps << std::endl;

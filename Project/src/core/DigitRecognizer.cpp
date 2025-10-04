@@ -18,19 +18,19 @@ bool DigitRecognizer::loadModel(const std::string &model_path)
 {
     // 首先检查文件是否存在
     if (!std::filesystem::exists(model_path)) {
-        std::cerr << "❌ 模型文件不存在: " << model_path << std::endl;
+        std::cerr << "[ERROR] 模型文件不存在: " << model_path << std::endl;
         return false;
     }
     
     try
     {
         svm_model = cv::ml::SVM::load(model_path);
-        std::cout << "✅ 数字识别模型加载成功: " << model_path << std::endl;
+        std::cout << "[Done] 数字识别模型加载成功: " << model_path << std::endl;
         return true;
     }
     catch (const cv::Exception &e)
     {
-        std::cerr << "❌ 模型加载失败: " << e.what() << std::endl;
+        std::cerr << "[ERROR] 模型加载失败: " << e.what() << std::endl;
         return false;
     }
 }

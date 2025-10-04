@@ -17,12 +17,12 @@ PoseResult PnPSolver::solveArmorPose(const std::vector<cv::Point2f>& points2d,
     PoseResult result;
     
     if (!params_loaded_) {
-        std::cerr << "❌ 相机参数未加载" << std::endl;
+        std::cerr << "[ERROR] 相机参数未加载" << std::endl;
         return result;
     }
     
     if (points2d.size() != 4) {
-        std::cerr << "❌ 需要4个2D点进行PnP解算，当前点数: " << points2d.size() << std::endl;
+        std::cerr << "[ERROR] 需要4个2D点进行PnP解算，当前点数: " << points2d.size() << std::endl;
         return result;
     }
     
@@ -55,10 +55,10 @@ PoseResult PnPSolver::solveArmorPose(const std::vector<cv::Point2f>& points2d,
         
         result.valid = true;
         
-        std::cout << "✅ PnP解算成功 - 距离: " << result.distance << "mm" << std::endl;
+        std::cout << "[Done] PnP解算成功 - 距离: " << result.distance << "mm" << std::endl;
         
     } catch (const cv::Exception& e) {
-        std::cerr << "❌ PnP解算失败: " << e.what() << std::endl;
+        std::cerr << "[ERROR] PnP解算失败: " << e.what() << std::endl;
     }
     
     return result;

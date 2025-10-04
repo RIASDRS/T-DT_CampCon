@@ -7,24 +7,24 @@ namespace armor_detection {
 ArmorDetector::ArmorDetector() {}
 
 bool ArmorDetector::init(const std::string& model_path, const std::string& camera_params_path) { //初始化装甲板检测，会配置数字模型和相机参数路径
-    std::cout << "🚀 初始化装甲板检测系统..." << std::endl;
+    std::cout << "[Launched] 初始化装甲板检测系统..." << std::endl;
     
     // 加载数字识别模型
     if (!digit_recognizer_.loadModel(model_path)) {
-        std::cerr << "❌ 数字识别模型加载失败" << std::endl;
+        std::cerr << "[ERROR] 数字识别模型加载失败" << std::endl;
         return false;
     }
     
     // 加载相机参数
     if (!camera_calibrator_.loadParams(camera_params_path)) {
-        std::cerr << "⚠️  相机参数加载失败，将使用默认参数" << std::endl;
+        std::cerr << "[WARNINGS]  相机参数加载失败，将使用默认参数" << std::endl;
         // 可以设置默认相机参数或继续运行
     } else {
         // 设置PnP解算器的相机参数
         pnp_solver_.setCameraParams(camera_calibrator_.getCameraParams());
     }
     
-    std::cout << "✅ 装甲板检测系统初始化完成" << std::endl;
+    std::cout << "[Done] 装甲板检测系统初始化完成" << std::endl;
     return true;
 }
 
@@ -51,7 +51,7 @@ std::vector<DetectionResult> ArmorDetector::processFrame(const cv::Mat& frame) {
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     
-    std::cout << "⏱️  处理耗时: " << duration.count() << "ms" << std::endl;
+    std::cout << "[Info] 处理耗时: " << duration.count() << "ms" << std::endl;
     
     return latest_results_;
 }
@@ -79,11 +79,12 @@ DetectionResult ArmorDetector::createArmorResult(const LightBarPair& pair, const
     // 3D位姿解算
     if (config_.enable_pnp && pnp_solver_.isParamsLoaded()) {
         calculatePose(result);
+        std::cout<<"[PnP] Solving...";
     }
     
     result.valid = true;
     
-    std::cout << "🎯 创建装甲板结果 - 数字: " << result.digit << std::endl;
+    std::cout << "[Done] 创建装甲板结果 - 数字: " << result.digit << std::endl;
     
     return result;
 }
@@ -141,7 +142,7 @@ void ArmorDetector::calculatePose(DetectionResult& result) {
             double error = pnp_solver_.calculateReprojectionError(
                 result.points2d, result.points3d, result.pose);
             
-            std::cout << "📏 重投影误差: " << error << " 像素" << std::endl;
+            std::cout << "[Done] 重投影误差: " << error << " 像素" << std::endl;
         }
     }
 }
