@@ -12,6 +12,18 @@ void PnPSolver::setCameraParams(const CameraParams& params) {
     params_loaded_ = params.valid;
 }
 
+// void PnPSolver::getCameraParams(){
+//     return 
+// }
+
+Point3D tvecToPoint3D(const cv::Mat& tvec) {
+    Point3D point;
+    point.x = tvec.at<double>(0);
+    point.y = tvec.at<double>(1);
+    point.z = tvec.at<double>(2);
+    return point;
+}
+
 PoseResult PnPSolver::solveArmorPose(const std::vector<cv::Point2f>& points2d, 
                                     const ArmorModel& model) {
     PoseResult result;
@@ -40,6 +52,10 @@ PoseResult PnPSolver::solveArmorPose(const std::vector<cv::Point2f>& points2d,
         cv::solvePnP(object_points, points2d, 
                      camera_params_.camera_matrix, camera_params_.dist_coeffs,
                      result.rvec, result.tvec, false, cv::SOLVEPNP_ITERATIVE);
+
+        //中心点在相机坐标系下
+        result.center_point.emplace_back(result.tvec.at<double>(0),result.tvec.at<double>(1),result.tvec.at<double>(2));
+
         
         // 计算距离
         result.distance = cv::norm(result.tvec);
@@ -79,12 +95,6 @@ std::vector<Point3D> PnPSolver::generateArmorModelPoints(const ArmorModel& model
     return points;
 }
 
-PoseResult PnPSolver::solveLightBarPose(const cv::RotatedRect& light_bar) {
-    // 简化版本，实际应用中可能需要更复杂的处理
-    PoseResult result;
-    // 实现留空，根据需求补充
-    return result;
-}
 
 double PnPSolver::calculateReprojectionError(const std::vector<cv::Point2f>& points2d,
                                            const std::vector<Point3D>& points3d,

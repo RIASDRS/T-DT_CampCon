@@ -1,5 +1,6 @@
 #include "common.h"
 #include "core/ArmorDetector.h"
+#include "core/TrajectoryPredictor.h"
 #include "utils/ConfigLoader.h"
 #include "utils/ImageUtils.h"
 #include <iostream>
@@ -8,6 +9,46 @@
 #include <iomanip>
 
 using namespace armor_detection;
+
+TrajectoryPredictor predictor(3);
+int num_predictions = 5;
+
+//3维点投射
+void project3d(cv::Mat frame, std::vector<cv::Point3f> objectPoints){
+    
+
+    // 2. 定义相机内参矩阵 (示例参数，需要根据实际相机调整)
+    cv::Mat cameraMatrix = (cv::Mat_<double>(3, 3) << 
+        1.7774091341308808e+03, 0., 7.1075979428865026e+02, 0., 
+           1.7754170626354828e+03, 5.3472407285624729e+02, 0., 0., 1.);
+
+    // 3. 定义畸变系数 (示例参数)
+    cv::Mat distCoeffs = (cv::Mat_<double>(5, 1) << -5.6313426428564950e-01, 1.8301501710641366e-01,
+           1.9661478907901904e-03, 9.6259122849674621e-04,
+           5.6883803390679100e-01);
+
+    // 4. 定义相机姿态 (旋转向量和平移向量)
+    cv::Mat rvec = (cv::Mat_<double>(3, 1) << 0, 0, 0);  // 旋转向量
+    cv::Mat tvec = (cv::Mat_<double>(3, 1) << 0, 0, 0);  // 平移向量，Z方向移动使相机远离物体
+
+    // 5. 投影三维点到二维图像平面
+    std::vector<cv::Point2f> imagePoints;
+    cv::projectPoints(objectPoints, rvec, tvec, cameraMatrix, distCoeffs, imagePoints);
+
+    // 7. 在图像上绘制投影点
+    for (size_t i = 0; i < imagePoints.size(); i++) {
+        cv::Point2f pt = imagePoints[i];
+        
+        // 绘制圆点
+        cv::circle(frame, pt, 5, cv::Scalar(0, 0, 255), -1);  // 红色实心圆
+        
+        // 添加点编号
+        cv::putText(frame, std::to_string(i + 1), 
+                   cv::Point(pt.x + 10, pt.y - 10),
+                   cv::FONT_HERSHEY_SIMPLEX, 0.5, 
+                   cv::Scalar(255, 255, 255), 1);
+    }
+}
 
 // 检查文件是否存在
 bool checkFileExists(const std::string& path) {
@@ -103,6 +144,7 @@ int main(int argc, char* argv[]) {
     
     // 主处理循环
     while (true) {
+        
         if (!cap.read(frame)) {
             if (frame_count == 0) {
                 std::cerr << "[ERROR] 无法读取第一帧" << std::endl;
@@ -112,14 +154,38 @@ int main(int argc, char* argv[]) {
                 break;
             }
         }
-        
+        cv::Mat display_frame = frame.clone();//提前至此处用于3d
         frame_count++;
         
         // 处理当前帧
-        auto results = detector.processFrame(frame);
+        auto results = detector.processFrame(frame);//获取vector<DetectionResult>
+        for(const auto &detection_result : results)//遍历vector<DetectionResult>
+        {
+            std::cout << "[Info] center_point: " <<detection_result.digit << ":";
+            PoseResult pose = detection_result.pose;
+            for(const auto &center_point : pose.center_point)
+            {
+                predictor.addPoint(center_point.x,center_point.y,center_point.z, 5);
+                std::cout <<center_point.x << ","<<center_point.y <<","<< center_point.z << std::endl;
+            }
+        }
+
+        if (predictor.getPointCount()>=5){
+            predictor.fit();
+            auto predictions = predictor.predict(num_predictions);
+            std::cout << "\n多项式拟合预测结果:" << std::endl;
+            for (size_t i = 0; i < predictions.size(); i++) {
+                std::cout << "预测点 " << i+1 << ": (" 
+                    << predictions[i].x << ", " 
+                    << predictions[i].y << ", " 
+                    << predictions[i].z << ")" << std::endl;
+                }       
+            project3d(display_frame, predictions);
+        }
+    
         
         // 绘制结果
-        cv::Mat display_frame = frame.clone();
+        //cv::Mat display_frame = frame.clone();
         detector.drawResults(display_frame, results);
         
         // 显示帧率信息
@@ -143,7 +209,7 @@ int main(int argc, char* argv[]) {
         if (config.show_debug) {
             cv::imshow("3D Armor Detection", display_frame);
             
-            int key = cv::waitKey(10);
+            int key = cv::waitKey(50);
             if (key == 27) { // ESC键退出
                 std::cout << "[PAUSED]  用户中断处理" << std::endl;
                 break;

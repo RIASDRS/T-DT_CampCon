@@ -17,6 +17,7 @@ set(CORE_SOURCES
     core/LightBarDetector.cpp
     core/DigitRecognizer.cpp
     core/UnifiedRotatedRect.cpp
+    core/TrajectoryPredictor.cpp
 )
 
 set(UTILS_SOURCES

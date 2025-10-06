@@ -40,6 +40,7 @@ struct CameraParams {
 struct PoseResult {
     cv::Mat rvec;               // 旋转向量
     cv::Mat tvec;               // 平移向量
+    std::vector<cv::Point3f> center_point;
     double distance;            // 距离（mm）
     double pitch;               // 俯仰角（度）
     double yaw;                 // 偏航角（度）
