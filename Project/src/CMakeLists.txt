@@ -2,11 +2,13 @@
 
 # 查找OpenCV
 find_package(OpenCV REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 # 包含目录
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${OpenCV_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIR}
 )
 
 # 源文件列表
@@ -18,6 +20,7 @@ set(CORE_SOURCES
     core/DigitRecognizer.cpp
     core/UnifiedRotatedRect.cpp
     core/TrajectoryPredictor.cpp
+    core/armor_ekf.cpp
 )
 
 set(UTILS_SOURCES
